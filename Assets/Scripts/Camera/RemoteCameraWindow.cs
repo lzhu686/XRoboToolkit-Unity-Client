@@ -88,9 +88,13 @@ public class RemoteCameraWindow : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    // 保存监听端口，供外部调用 NotifyMediaDecoderReady 使用
+    private int _listeningPort = 12345;
+
     public IEnumerator OnStartListen(int port)
     {
         Debug.Log("StartListen port:" + port);
+        _listeningPort = port;
 
         _texture = new Texture2D(_resolutionWidth, _resolutionHeight, TextureFormat.RGB24, false, false);
         RemoteCameraImage.texture = _texture;
@@ -98,10 +102,28 @@ public class RemoteCameraWindow : MonoBehaviour
 
         MediaDecoder.initialize((int)_texture.GetNativeTexturePtr(), _resolutionWidth, _resolutionHeight);
         MediaDecoder.startServer(port, false);
-        yield return null;
 
-        // 注意：不再在这里发送 StartReceivePcCamera
-        // 由 UICameraCtrl.RequestCameraStreamCoroutine 统一发送 OPEN_CAMERA 命令
+        // 等待 MediaDecoder 完成初始化
+        // startServer 是异步的，需要给底层一些时间完成 TCP 监听的建立
+        yield return new WaitForSeconds(0.5f);
+
+        // 注意：MEDIA_DECODER_READY 不在这里发送！
+        // 必须等 TcpClient 连接后，先发送 OPEN_CAMERA，再发送 MEDIA_DECODER_READY
+        // 由 UICameraCtrl.RequestCameraStreamCoroutine 在正确时机调用 NotifyMediaDecoderReady()
+        Debug.Log($"MediaDecoder initialized on port {port}, waiting for NotifyMediaDecoderReady call");
+    }
+
+    /// <summary>
+    /// 通知服务器 MediaDecoder 已就绪
+    /// 必须在 OPEN_CAMERA 发送之后调用
+    /// </summary>
+    public void NotifyMediaDecoderReady()
+    {
+        if (NetworkCommander.Instance != null)
+        {
+            NetworkCommander.Instance.MediaDecoderReady(_listeningPort);
+            Debug.Log($"MediaDecoder ready signal sent for port {_listeningPort}");
+        }
     }
 
     private void LateUpdate()

@@ -11,6 +11,7 @@ namespace Network
     {
         public const string OPEN_CAMERA = "OPEN_CAMERA";
         public const string CLOSE_CAMERA = "CLOSE_CAMERA";
+        public const string MEDIA_DECODER_READY = "MEDIA_DECODER_READY";
     }
 
     public class NetworkCommander : MonoBehaviour
@@ -83,6 +84,17 @@ namespace Network
         {
             LogWindow.Warn("Sending CLOSE_CAMERA command.");
             SendCommand(NetworkCommand.CLOSE_CAMERA, new byte[0]);
+        }
+
+        /// <summary>
+        /// 通知服务器 MediaDecoder 已就绪，可以开始发送视频流
+        /// </summary>
+        /// <param name="port">MediaDecoder 监听的端口</param>
+        public void MediaDecoderReady(int port)
+        {
+            LogWindow.Info($"Sending MEDIA_DECODER_READY command, port: {port}");
+            byte[] data = BitConverter.GetBytes(port);
+            SendCommand(NetworkCommand.MEDIA_DECODER_READY, data);
         }
 
         #endregion

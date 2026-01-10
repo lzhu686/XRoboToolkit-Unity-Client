@@ -167,8 +167,13 @@ public partial class UICameraCtrl : MonoBehaviour
         var camPara = VideoSourceConfigManager.Instance.CameraParameters;
 
         // Start listening to the camera
+        // 这会启动 MediaDecoder 并等待其初始化完成
         RemoteCameraWindowObj.SetActive(true);
-        RemoteCameraWindowObj.GetComponent<RemoteCameraWindow>().StartListen(camPara.width, camPara.height, camPara.fps,
+        var remoteCameraWindow = RemoteCameraWindowObj.GetComponent<RemoteCameraWindow>();
+
+        // 重要: 必须等待 StartListen 协程完成，确保 MediaDecoder 完全初始化
+        // StartListen 内部会等待 0.5 秒让底层 TCP 监听建立
+        yield return remoteCameraWindow.StartListen(camPara.width, camPara.height, camPara.fps,
             camPara.bitrate, streamingPort);
 
         yield return new WaitForSeconds(0.2f);
@@ -196,14 +201,21 @@ public partial class UICameraCtrl : MonoBehaviour
             VideoSourceConfigManager.Instance.CurrentVideoSource.camera,
             localIP, // local ip
             streamingPort);
-        
+
         LogWindow.Info("Requesting camera stream with config: " + customConfig.ToString());
 
         // Utils.WriteLog(logTag, $"send camera config: {customConfig}");
         var data = CameraRequestSerializer.Serialize(customConfig);
 
-        // Use network commander
+        // 步骤 1: 发送 OPEN_CAMERA 命令 (服务器保存参数)
         NetworkCommander.Instance.OpenCamera(data);
+
+        // 等待一小段时间确保命令到达
+        yield return new WaitForSeconds(0.1f);
+
+        // 步骤 2: 发送 MEDIA_DECODER_READY 命令 (服务器开始推流)
+        // 必须在 OPEN_CAMERA 之后发送！
+        remoteCameraWindow.NotifyMediaDecoderReady();
     }
 
     private void OnCameraStateChanged(int state)
