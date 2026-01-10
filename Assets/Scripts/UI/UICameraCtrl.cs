@@ -133,6 +133,9 @@ public partial class UICameraCtrl : MonoBehaviour
             // Update camera source, including shaders, etc.
             videoSourceManager.UpdateVideoSource(cameraSource);
 
+            // 切换视频源后更新默认 IP
+            CameraSendInputDialog.UpdateDefaultIP();
+
             // send video stream request to the server
             CameraSendInputDialog.Show(RequestCameraStream);
         }

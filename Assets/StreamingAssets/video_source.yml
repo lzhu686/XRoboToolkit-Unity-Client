@@ -42,6 +42,11 @@
       type: "int"
       description: "Bitrate of the video stream in bps"
       value: 24117248         # 23 Mbps (23 x 1024 x 1024)
+    # ========== 网络参数 ==========
+    - name: "DefaultIP"
+      type: "string"
+      description: "Default server IP address"
+      value: "127.0.0.1"      # ADB 模式使用 localhost
 
 # USB Stereo Camera (WiFi 模式) - 低延迟优化
 # 适用场景: WiFi 无线连接，需要抗网络波动
@@ -83,3 +88,8 @@
       type: "int"
       description: "Bitrate of the video stream in bps"
       value: 11534336         # 11 Mbps (11 x 1024 x 1024)
+    # ========== 网络参数 ==========
+    - name: "DefaultIP"
+      type: "string"
+      description: "Default server IP address"
+      value: "172.16.20.19"   # WiFi 模式使用服务器 IP

@@ -12,6 +12,11 @@ using UnityEngine.UI;
 /// <summary>
 /// Display window of PC camera
 /// Responsible for receiving, decoding, and displaying data
+///
+/// 生命周期管理:
+/// - OnStartListen: 初始化 MediaDecoder，发送 OPEN_CAMERA 命令
+/// - OnCloseBtn: 发送 CLOSE_CAMERA 命令，然后释放资源
+/// - OnDisable: 仅释放 MediaDecoder 资源（避免重复发送关闭命令）
 /// </summary>
 public class RemoteCameraWindow : MonoBehaviour
 {
@@ -32,10 +37,19 @@ public class RemoteCameraWindow : MonoBehaviour
 
     public CustomButton listenBtn;
 
+    // 标记是否已发送关闭命令，避免重复发送
+    private bool _closeCameraSent = false;
+
     private void Awake()
     {
         transform.position = Camera.main.transform.position;
         transform.rotation = Camera.main.transform.rotation;
+    }
+
+    private void OnEnable()
+    {
+        // 重置状态
+        _closeCameraSent = false;
     }
 
     public void StartListen(int width, int height, int fps, int bitrate, int port)
@@ -50,17 +64,27 @@ public class RemoteCameraWindow : MonoBehaviour
 
     private void OnDisable()
     {
-        MediaDecoder.release();
         Debug.Log("RemoteCameraWindow OnDisable");
-        TcpHandler.SendFunctionValue("StopReceivePcCamera", "");
+
+        // 仅释放 MediaDecoder 资源
+        MediaDecoder.release();
+
+        // 注意：不在这里发送关闭命令
+        // 关闭命令统一由 OnCloseBtn 发送，避免重复
     }
 
     public void OnCloseBtn()
     {
         // Reset listen button
         listenBtn.SetOn(false);
-        // send close event to server
-        NetworkCommander.Instance.CloseCamera();
+
+        // 发送关闭命令（仅发送一次）
+        if (!_closeCameraSent)
+        {
+            _closeCameraSent = true;
+            NetworkCommander.Instance.CloseCamera();
+        }
+
         gameObject.SetActive(false);
     }
 
@@ -76,14 +100,8 @@ public class RemoteCameraWindow : MonoBehaviour
         MediaDecoder.startServer(port, false);
         yield return null;
 
-        JsonData cameraParam = new JsonData();
-        cameraParam["ip"] = Utils.GetLocalIPv4();
-        cameraParam["port"] = port;
-        cameraParam["width"] = _resolutionWidth;
-        cameraParam["height"] = _resolutionHeight;
-        cameraParam["fps"] = _videoFps;
-        cameraParam["bitrate"] = _bitrate;
-        TcpHandler.SendFunctionValue("StartReceivePcCamera", cameraParam.ToJson());
+        // 注意：不再在这里发送 StartReceivePcCamera
+        // 由 UICameraCtrl.RequestCameraStreamCoroutine 统一发送 OPEN_CAMERA 命令
     }
 
     private void LateUpdate()

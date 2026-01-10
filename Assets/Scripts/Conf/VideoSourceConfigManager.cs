@@ -395,6 +395,11 @@ public class VideoSourceConfigManager : MonoBehaviour
     /// </summary>
     public int CamBitrate => CurrentVideoSource?.GetIntProperty("CamBitrate") ?? 5000000;
 
+    /// <summary>
+    /// Get default server IP from the current video source
+    /// </summary>
+    public string DefaultIP => CurrentVideoSource?.GetStringProperty("DefaultIP") ?? "127.0.0.1";
+
     public float RectWidth
     {
         get
