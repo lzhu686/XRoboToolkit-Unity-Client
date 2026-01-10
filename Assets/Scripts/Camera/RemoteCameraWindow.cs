@@ -52,6 +52,17 @@ public class RemoteCameraWindow : MonoBehaviour
         _closeCameraSent = false;
     }
 
+    /// <summary>
+    /// 设置视频参数 (在调用 OnStartListen 之前调用)
+    /// </summary>
+    public void SetParameters(int width, int height, int fps, int bitrate)
+    {
+        _resolutionWidth = width;
+        _resolutionHeight = height;
+        _videoFps = fps;
+        _bitrate = bitrate;
+    }
+
     public void StartListen(int width, int height, int fps, int bitrate, int port)
     {
         _resolutionWidth = width;

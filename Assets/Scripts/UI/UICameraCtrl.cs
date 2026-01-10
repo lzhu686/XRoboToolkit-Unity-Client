@@ -171,10 +171,11 @@ public partial class UICameraCtrl : MonoBehaviour
         RemoteCameraWindowObj.SetActive(true);
         var remoteCameraWindow = RemoteCameraWindowObj.GetComponent<RemoteCameraWindow>();
 
-        // 重要: 必须等待 StartListen 协程完成，确保 MediaDecoder 完全初始化
-        // StartListen 内部会等待 0.5 秒让底层 TCP 监听建立
-        yield return remoteCameraWindow.StartListen(camPara.width, camPara.height, camPara.fps,
-            camPara.bitrate, streamingPort);
+        // 重要: 必须等待协程完成，确保 MediaDecoder 完全初始化
+        // OnStartListen 内部会等待 0.5 秒让底层 TCP 监听建立
+        // 注意: 需要先设置参数，再调用协程
+        remoteCameraWindow.SetParameters(camPara.width, camPara.height, camPara.fps, camPara.bitrate);
+        yield return remoteCameraWindow.OnStartListen(streamingPort);
 
         yield return new WaitForSeconds(0.2f);
 
