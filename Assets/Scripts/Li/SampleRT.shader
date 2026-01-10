@@ -143,9 +143,12 @@ Shader "Custom/SampleRT"
                     adjusted_uv.x = i.uv.x - 0.08/2; // Shift right for right eye
                 }
                 
-                // Calculate the bounds for visible area based on visibleRatio with 4:3 aspect ratio
+                // Calculate the bounds for visible area based on visibleRatio
+                // Use heightCompressionFactor to determine aspect ratio dynamically
+                // 4:3 camera: heightCompressionFactor = 1.333, ratio = 0.75
+                // 16:9 camera: heightCompressionFactor = 1.778, ratio = 0.5625
                 float widthRatio = _visibleRatio;
-                float heightRatio = _visibleRatio * (3.0/4.0); // Apply 4:3 aspect ratio
+                float heightRatio = _visibleRatio * (1.0 / _heightCompressionFactor);
                 
                 float minBoundX = (1.0 - widthRatio) * 0.5;
                 float maxBoundX = 1.0 - minBoundX;

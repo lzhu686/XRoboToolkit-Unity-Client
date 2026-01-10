@@ -1,45 +1,14 @@
-﻿# Video Stream Source Configuration
-- name: "PICO4U"
-  camera: "VR"
-  description: "PICO4U Video Stream Source"
+# Video Stream Source Configuration
+# 双臂灵巧手遥操作专用配置
+# 相机: HBVCAM-F2439GS-2 V11 (AR0234 全局快门, MJPEG 2560x720@60fps)
+
+# USB Stereo Camera (ADB 模式) - 高码率低延迟
+# 适用场景: USB 有线连接，带宽充足
+- name: "ADB"
+  camera: "USB"
+  description: "USB有线模式 (23Mbps)"
   properties:
-    - name: "visibleRatio"
-      type: "float"
-      description: "Visible ratio for the shader"
-      value: 0.555
-    - name: "contentRatio"
-      type: "float"
-      description: "Content ratio for the shader"
-      value: 1.8
-    - name: "heightCompressionFactor"
-      type: "float"
-      description: "Height compression factor for the shader"
-      value: 1.333333 # 4/3
-    - name: "RawImageRectSize"
-      type: "string"
-      description: "Size of the RawImage rectangle for the stereo view"
-      value: "600x225"
-    - name: "CamWidth"
-      type: "int"
-      description: "Camera width for the video stream"
-      value: 2160
-    - name: "CamHeight"
-      type: "int"
-      description: "Camera height for the video stream"
-      value: 810
-    - name: "CamFPS"
-      type: "int"
-      description: "Frame rate of the video stream in FPS"
-      value: 60
-    - name: "CamBitrate"
-      type: "int"
-      description: "Bitrate of the video stream in bps"
-      value: 20971520 # 20 x 1024 x 1024
-  
-- name: "ZEDMINI"
-  camera: "ZED"
-  description: "ZED MINI Video Stream Source"
-  properties:
+    # ========== 着色器参数 (16:9 配置) ==========
     - name: "visibleRatio"
       type: "float"
       description: "Visible ratio for the shader"
@@ -51,11 +20,53 @@
     - name: "heightCompressionFactor"
       type: "float"
       description: "Height compression factor for the shader"
-      value: 1.777778 # 16/9
+      value: 1.777778         # 16/9
     - name: "RawImageRectSize"
       type: "string"
       description: "Size of the RawImage rectangle for the stereo view"
       value: "600x168.75"
+    # ========== 相机参数 (ADB 模式 - 高码率低延迟) ==========
+    - name: "CamWidth"
+      type: "int"
+      description: "Camera width for the video stream"
+      value: 2560             # 双目总宽度
+    - name: "CamHeight"
+      type: "int"
+      description: "Camera height for the video stream"
+      value: 720              # 720p
+    - name: "CamFPS"
+      type: "int"
+      description: "Frame rate of the video stream in FPS"
+      value: 60               # 60fps
+    - name: "CamBitrate"
+      type: "int"
+      description: "Bitrate of the video stream in bps"
+      value: 24117248         # 23 Mbps (23 x 1024 x 1024)
+
+# USB Stereo Camera (WiFi 模式) - 低延迟优化
+# 适用场景: WiFi 无线连接，需要抗网络波动
+- name: "WIFI"
+  camera: "USB"
+  description: "WiFi无线模式 (11Mbps)"
+  properties:
+    # ========== 着色器参数 (与 ADB 模式一致) ==========
+    - name: "visibleRatio"
+      type: "float"
+      description: "Visible ratio for the shader"
+      value: 0.439464
+    - name: "contentRatio"
+      type: "float"
+      description: "Content ratio for the shader"
+      value: 1.704850
+    - name: "heightCompressionFactor"
+      type: "float"
+      description: "Height compression factor for the shader"
+      value: 1.777778         # 16/9
+    - name: "RawImageRectSize"
+      type: "string"
+      description: "Size of the RawImage rectangle for the stereo view"
+      value: "600x168.75"
+    # ========== 相机参数 (WiFi 遥操作优化) ==========
     - name: "CamWidth"
       type: "int"
       description: "Camera width for the video stream"
@@ -67,8 +78,8 @@
     - name: "CamFPS"
       type: "int"
       description: "Frame rate of the video stream in FPS"
-      value: 60
+      value: 60               # 保持 60fps
     - name: "CamBitrate"
       type: "int"
       description: "Bitrate of the video stream in bps"
-      value: 4000000
+      value: 11534336         # 11 Mbps (11 x 1024 x 1024)
