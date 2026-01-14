@@ -92,4 +92,4 @@
     - name: "DefaultIP"
       type: "string"
       description: "Default server IP address"
-      value: "172.16.20.19"   # WiFi 模式使用服务器 IP
+      value: "172.16.20.25"   # WiFi 模式使用服务器 IP
