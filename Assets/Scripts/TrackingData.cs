@@ -209,15 +209,17 @@ namespace Robot
                                 }
 
                                 len++;
-                                MotionTrackerLocation localLocation = locations.localLocation;
+                                // 使用 globalLocation (全局参考系) 而非 localLocation (HMD 参考系)
+                                // localLocation 会随头显移动而变化，不适合遥操作场景
+                                MotionTrackerLocation globalLocation = locations.globalLocation;
 
-                                joint["p"] = GetPoseStr(localLocation.pose.Position, localLocation.pose.Orientation);
+                                joint["p"] = GetPoseStr(globalLocation.pose.Position, globalLocation.pose.Orientation);
                                 unsafe
                                 {
-                                    float* pVelo = localLocation.linearVelocity;
-                                    float* pAcce = localLocation.linearAcceleration;
-                                    float* pWVelo = localLocation.angularVelocity;
-                                    float* pWAcce = localLocation.angularAcceleration;
+                                    float* pVelo = globalLocation.linearVelocity;
+                                    float* pAcce = globalLocation.linearAcceleration;
+                                    float* pWVelo = globalLocation.angularVelocity;
+                                    float* pWAcce = globalLocation.angularAcceleration;
 
                                     string va = pVelo[0] + "," + pVelo[1] + "," + pVelo[2] + "," + pWVelo[0] + "," +
                                                 pWVelo[1] +
