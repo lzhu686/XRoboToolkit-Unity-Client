@@ -8,19 +8,26 @@
   camera: "USB"
   description: "USB有线模式 (23Mbps)"
   properties:
-    # ========== 着色器参数 (16:9 配置) ==========
+    # ========== 着色器参数 (16:9 精确适配) ==========
+    # 恢复原始窗口大小，修正 contentRatio 消除裁剪
+    # 公式: contentRatio = 1/visibleRatio = 1/0.439464 ≈ 2.276 (零裁剪)
+    # 原始 contentRatio=1.705 只显示 ~75% 内容，现在显示 100%
     - name: "visibleRatio"
       type: "float"
-      description: "Visible ratio for the shader"
+      description: "画面占 VR 面板的比例 (1.0=填满)"
       value: 0.439464
     - name: "contentRatio"
       type: "float"
-      description: "Content ratio for the shader"
-      value: 1.704850
+      description: "纹理采样范围 (= 1/visibleRatio 时零裁剪)"
+      value: 2.276              # 1/0.439464，原始1.705有裁剪
     - name: "heightCompressionFactor"
       type: "float"
-      description: "Height compression factor for the shader"
-      value: 1.777778         # 16/9
+      description: "宽高比补偿 (16:9 = 1.777778)"
+      value: 1.777778           # 16/9
+    - name: "stereoOffset"
+      type: "float"
+      description: "立体视差偏移 (双目相机设0, 单目相机设0.08)"
+      value: 0.0
     - name: "RawImageRectSize"
       type: "string"
       description: "Size of the RawImage rectangle for the stereo view"
@@ -54,19 +61,23 @@
   camera: "USB"
   description: "WiFi无线模式 (11Mbps)"
   properties:
-    # ========== 着色器参数 (与 ADB 模式一致) ==========
+    # ========== 着色器参数 (16:9 精确适配，与 ADB 一致) ==========
     - name: "visibleRatio"
       type: "float"
-      description: "Visible ratio for the shader"
+      description: "画面占 VR 面板的比例 (1.0=填满)"
       value: 0.439464
     - name: "contentRatio"
       type: "float"
-      description: "Content ratio for the shader"
-      value: 1.704850
+      description: "纹理采样范围 (= 1/visibleRatio 时零裁剪)"
+      value: 2.276              # 1/0.439464
     - name: "heightCompressionFactor"
       type: "float"
-      description: "Height compression factor for the shader"
-      value: 1.777778         # 16/9
+      description: "宽高比补偿 (16:9 = 1.777778)"
+      value: 1.777778           # 16/9
+    - name: "stereoOffset"
+      type: "float"
+      description: "立体视差偏移 (双目相机设0, 单目相机设0.08)"
+      value: 0.0
     - name: "RawImageRectSize"
       type: "string"
       description: "Size of the RawImage rectangle for the stereo view"

@@ -58,15 +58,18 @@ namespace Robot.Conf
 
             // Update SetLERE component
             setLere.UpdateParameters(videoSourceConfigManager.VisibleRatio,
-                videoSourceConfigManager.ContentRatio, videoSourceConfigManager.HeightCompressionFactor);
+                videoSourceConfigManager.ContentRatio, videoSourceConfigManager.HeightCompressionFactor,
+                videoSourceConfigManager.StereoOffset);
 
             // log shader properties for debugging
             Debug.Log($"Shader Properties - Visible Ratio: {videoSourceConfigManager.VisibleRatio}, " +
                       $"Content Ratio: {videoSourceConfigManager.ContentRatio}, " +
-                      $"Height Compression Factor: {videoSourceConfigManager.HeightCompressionFactor}");
+                      $"Height Compression Factor: {videoSourceConfigManager.HeightCompressionFactor}, " +
+                      $"Stereo Offset: {videoSourceConfigManager.StereoOffset}");
             LogWindow.Info($"Shader Properties - Visible Ratio: {videoSourceConfigManager.VisibleRatio}, " +
                            $"Content Ratio: {videoSourceConfigManager.ContentRatio}, " +
-                           $"Height Compression Factor: {videoSourceConfigManager.HeightCompressionFactor}");
+                           $"Height Compression Factor: {videoSourceConfigManager.HeightCompressionFactor}, " +
+                           $"Stereo Offset: {videoSourceConfigManager.StereoOffset}");
 
             // Log camera settings for debugging
             Debug.Log(

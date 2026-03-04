@@ -87,8 +87,9 @@ Shader "Custom/SampleRT"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _visibleRatio ("Visible Ratio", Range(0.0, 2.0)) = 1.0
-        _contentRatio ("Content Ratio", Range(0.0, 2.0)) = 0.555
-        _heightCompressionFactor ("Height Compression", Range(0.0, 2.0)) = 1.25
+        _contentRatio ("Content Ratio", Range(0.0, 2.0)) = 1.0
+        _heightCompressionFactor ("Height Compression", Range(0.0, 3.0)) = 1.777778
+        _stereoOffset ("Stereo Offset", Range(0.0, 0.2)) = 0.0
     }
     SubShader
     {
@@ -117,6 +118,7 @@ Shader "Custom/SampleRT"
             float _contentRatio;
             float _visibleRatio;
             float _heightCompressionFactor;
+            float _stereoOffset;
             
             v2f vert (appdata v)
             {
@@ -136,11 +138,11 @@ Shader "Custom/SampleRT"
                 // Apply the x shift to the clipping center
                 if(_isLE == 1) // Left eye
                 {
-                    adjusted_uv.x = i.uv.x + 0.08/2; // Shift left for left eye
+                    adjusted_uv.x = i.uv.x + _stereoOffset/2;
                 }
                 else // Right eye
                 {
-                    adjusted_uv.x = i.uv.x - 0.08/2; // Shift right for right eye
+                    adjusted_uv.x = i.uv.x - _stereoOffset/2;
                 }
                 
                 // Calculate the bounds for visible area based on visibleRatio
@@ -171,8 +173,8 @@ Shader "Custom/SampleRT"
                 if(_isLE == 1) // Left eye
                 {
                     // Apply content ratio with consistent centering
-                    float scaled_x = new_uv.x * _contentRatio + (1.0 - _contentRatio) * 0.5 + 0.08;
-                    
+                    float scaled_x = new_uv.x * _contentRatio + (1.0 - _contentRatio) * 0.5 + _stereoOffset;
+
                     // Map to left half of stereo texture
                     float final_x = scaled_x * 0.5;
                     float final_y = new_uv.y * _contentRatio + (1.0 - _contentRatio) * 0.5;
@@ -182,8 +184,8 @@ Shader "Custom/SampleRT"
                 else // Right eye
                 { 
                     // Apply content ratio with consistent centering
-                    float scaled_x = new_uv.x * _contentRatio + (1.0 - _contentRatio) * 0.5 - 0.08;
-                    
+                    float scaled_x = new_uv.x * _contentRatio + (1.0 - _contentRatio) * 0.5 - _stereoOffset;
+
                     // Map to right half of stereo texture
                     float final_x = scaled_x * 0.5 + 0.5;
                     float final_y = new_uv.y * _contentRatio + (1.0 - _contentRatio) * 0.5;
